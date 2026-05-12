@@ -2,407 +2,341 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>LUXWORLD AI</title>
-    
-    <!-- SVG Favicon Updated to AI Logo -->
-    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100' fill='none'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' style='stop-color:%2322d3ee' /%3E%3Cstop offset='100%25' style='stop-color:%230284c7' /%3E%3C/linearGradient%3E%3C/defs%3E%3Cpath d='M50 10 L85 30 L85 70 L50 90 L15 70 L15 30 Z' stroke='url(%23g)' stroke-width='8' stroke-linecap='round' stroke-linejoin='round' /%3E%3Cpath d='M40 35 V65 H65' stroke='url(%23g)' stroke-width='8' stroke-linecap='round' stroke-linejoin='round' /%3E%3C/svg%3E">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Natural Flow - Humanizer</title>
+    <!-- Favicon: Classic Paper Airplane -->
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Cpath fill='%230891b2' d='M498.1 5.6c10.1 7 15.4 19.1 13.5 31.2l-64 416c-1.5 9.7-7.4 18.2-16 23s-18.9 5.4-28 1.6L284 427.7l-68.5 74.1c-8.9 9.7-22.9 12.9-35.2 8.1S160 493.2 160 480V396.4c0-4 1.5-7.8 4.2-10.7L331.8 202.8c5.8-6.3 5.6-16-.4-22s-15.7-6.4-22-.7L106 360.8 20.9 325.2c-10.3-4.3-17.2-14-17.7-25.3s4.8-21.4 14.4-27l448-256c9.5-5.5 21.3-4.1 29.3 3.4z'/%3E%3C/svg%3E">
     
     <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Puter.js Library -->
     <script src="https://js.puter.com/v2/"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        body { font-family: 'Inter', sans-serif; background-color: #050505; color: #E0F2FE; margin: 0; display: flex; width: 100vw; height: 100vh; overflow: hidden; }
-        ::-webkit-scrollbar { width: 4px; height: 4px; }
-        ::-webkit-scrollbar-track { background: #0a0a0a; }
-        ::-webkit-scrollbar-thumb { background: #0ea5e9; border-radius: 4px; }
-
-        /* Sidebar & Resizer */
-        .sidebar { width: 280px; background-color: #0d0d0d; border-right: 1px solid #262626; display: flex; flex-direction: column; transition: transform 0.3s ease; z-index: 40; flex-shrink: 0; position: relative; }
-        #resizer { width: 4px; background: transparent; cursor: col-resize; z-index: 50; transition: background 0.2s; flex-shrink: 0; }
-        #resizer:hover, #resizer.resizing { background: #0ea5e9; }
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap');
+        body { font-family: 'Inter', sans-serif; transition: background 0.5s ease; margin: 0; min-height: 100vh; }
         
-        .sidebar-item { padding: 0.75rem 1rem; border-radius: 0.5rem; cursor: pointer; transition: background 0.2s; display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.25rem; font-size: 0.875rem; color: #d1d5db; }
-        .sidebar-item:hover { background-color: #262626; color: white; }
-        .sidebar-item.active { background-color: #1a1a1a; color: white; border: 1px solid #404040; }
-        
-        /* Chat UI */
-        .chat-main { flex-grow: 1; display: flex; flex-direction: column; position: relative; width: 100%; min-width: 0; background-color: #050505; height: 100%; }
-        .user-msg { background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%); color: white; border-radius: 1.25rem 1.25rem 0 1.25rem; box-shadow: 0 4px 15px rgba(14, 165, 233, 0.2); }
-        .ai-msg { background-color: #171717; border: 1px solid #262626; color: #e2e8f0; border-radius: 1.25rem 1.25rem 1.25rem 0; overflow-wrap: break-word; user-select: text; cursor: context-menu; }
-        .ai-msg img { max-width: 100%; border-radius: 0.75rem; border: 1px solid #333; margin-top: 0.5rem; }
+        textarea::-webkit-scrollbar { width: 8px; }
+        textarea::-webkit-scrollbar-track { background: rgba(15, 23, 42, 0.5); }
+        textarea::-webkit-scrollbar-thumb { background: #475569; border-radius: 4px; }
 
-        /* Formatting Support */
-        .msg-content b, .msg-content strong { color: #fff; font-weight: 800; }
-        .msg-content u { text-decoration: underline; text-decoration-color: #0ea5e9; }
-        .msg-content h1, .msg-content h2, .msg-content h3 { font-weight: 900; color: #0ea5e9; margin: 12px 0 6px 0; letter-spacing: -0.025em; }
-        .msg-content h1 { font-size: 1.5rem; }
-        .msg-content h2 { font-size: 1.25rem; }
-        .msg-content ul { list-style-type: disc; padding-left: 20px; margin: 10px 0; }
-        .msg-content li { margin-bottom: 6px; }
+        .glass-panel {
+            backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+        }
 
-        /* Ad Widget - Top of Sidebar */
-        #adWidgetContainer { padding: 12px; border-bottom: 1px solid #262626; }
-        #adWidget { position: relative; width: 100%; aspect-ratio: 16/9; border-radius: 1rem; overflow: hidden; border: 1px solid rgba(255,255,255,0.1); background: #000; }
-        .ad-fade { position: absolute; inset: 0; transition: opacity 1s ease-in-out; background-size: cover; background-position: center; cursor: pointer; }
-        .ad-glass { background: rgba(0,0,0,0.75); backdrop-filter: blur(4px); position: absolute; bottom: 0; width: 100%; padding: 8px 12px; font-size: 10px; color: white; border-top: 1px solid rgba(255,255,255,0.1); }
+        /* Platinum Theme Styles */
+        body.theme-platinum { background: linear-gradient(135deg, #09090b 0%, #1e293b 50%, #0f172a 100%) !important; }
+        .theme-platinum .platinum-gradient { background: linear-gradient(135deg, #e2e8f0 0%, #94a3b8 50%, #cbd5e1 100%); }
+        .theme-platinum .platinum-text {
+            background: linear-gradient(to right, #f8fafc, #94a3b8);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .theme-platinum .action-btn { background: linear-gradient(135deg, #e2e8f0 0%, #94a3b8 50%, #cbd5e1 100%); color: #0f172a; }
 
-        /* Typing Dots */
-        .typing-dot { width: 6px; height: 6px; background-color: #0ea5e9; border-radius: 50%; animation: bounce 1.4s infinite ease-in-out both; }
-        .typing-dot:nth-child(1) { animation-delay: -0.32s; }
-        .typing-dot:nth-child(2) { animation-delay: -0.16s; }
-        @keyframes bounce { 0%, 80%, 100% { transform: scale(0); } 40% { transform: scale(1); } }
+        /* Cyan Theme Styles */
+        body.theme-cyan { background: linear-gradient(135deg, #020617 0%, #0f172a 50%, #083344 100%) !important; }
+        .theme-cyan .action-btn { background: #0891b2; color: white; }
+        .theme-cyan .cyan-text { color: #22d3ee; }
 
-        #toast { visibility: hidden; min-width: 200px; background-color: #111827; color: #fff; text-align: center; border-radius: 12px; padding: 14px 20px; position: fixed; z-index: 100; left: 50%; bottom: 30px; transform: translateX(-50%); opacity: 0; transition: all 0.3s; border: 1px solid #374151; font-weight: 600; box-shadow: 0 10px 25px rgba(0,0,0,0.5); }
-        #toast.show { visibility: visible; opacity: 1; bottom: 50px; }
-
-        .quick-query { background: #171717; border: 1px solid #262626; color: #94a3b8; padding: 14px 18px; border-radius: 1.25rem; font-size: 0.875rem; text-align: left; cursor: pointer; transition: all 0.2s; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
-        .quick-query:hover { background: #262626; color: white; border-color: #404040; transform: translateY(-3px); box-shadow: 0 8px 12px rgba(0,0,0,0.2); }
-
-        @media (max-width: 768px) { .sidebar { position: absolute; transform: translateX(-100%); height: 100%; } .sidebar.open { transform: translateX(0); } #resizer { display: none; } }
+        @keyframes pulse-ring {
+            0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(148, 163, 184, 0.7); }
+            70% { transform: scale(1); box-shadow: 0 0 0 10px rgba(148, 163, 184, 0); }
+            100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(148, 163, 184, 0); }
+        }
+        .humanizing {
+            animation: pulse-ring 2s infinite;
+        }
     </style>
 </head>
-<body class="flex">
+<body id="body-root" class="theme-platinum min-h-screen flex flex-col text-slate-200">
 
-    <!-- Sidebar -->
-    <aside id="sidebar" class="sidebar">
-        <div id="adWidgetContainer">
-            <div id="adWidget"></div>
+    <!-- Header -->
+    <header class="w-full p-6 flex justify-between items-center max-w-5xl mx-auto">
+        <div class="flex items-center gap-3">
+            <div id="logo-box" class="w-12 h-12 rounded-xl flex items-center justify-center shadow-xl shadow-black/50 transition-all duration-500">
+                <i id="main-icon" class="fa-solid text-xl"></i>
+            </div>
+            <div>
+                <h1 class="text-xl font-bold tracking-tight" id="brand-name">Natural Flow</h1>
+                <div id="version-tag" class="text-[10px] uppercase tracking-[0.2em] text-slate-400 font-bold">Edition</div>
+            </div>
         </div>
-        <div class="p-4">
-            <button id="new-chat-btn" class="w-full flex items-center justify-center gap-2 bg-cyan-600 hover:bg-cyan-500 text-white font-black py-3 rounded-xl transition-all shadow-lg active:scale-95 text-sm uppercase tracking-tight">
-                <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="3"><path d="M12 5v14M7 12h10"/></svg>
-                New Chat
+        <div class="flex items-center gap-4">
+            <button onclick="toggleTheme()" class="p-2 bg-slate-800/50 rounded-lg border border-white/5 hover:bg-slate-700 transition-colors" title="Switch Theme">
+                <i class="fa-solid fa-palette text-slate-400"></i>
             </button>
+            <div class="text-sm text-slate-400 font-medium bg-slate-800/50 px-4 py-2 rounded-full border border-white/5">
+                <span id="word-count" class="text-slate-100">0</span> <span class="opacity-50">words</span>
+            </div>
         </div>
-        <div id="chat-list" class="flex-grow overflow-y-auto p-2 space-y-1"></div>
-        <div class="p-4 border-t border-gray-800 bg-black/20">
-             <a id="rewards-link" href="https://rewards.bing.com/welcome?rh=r8_Kq_R0jCo&ref=rafsrchae&form=ML2XE3&OCID=ML2XE3&PUBL=RewardsDO&CREA=ML2XE3" target="_blank" class="sidebar-item text-xs justify-center mb-2 font-black text-yellow-400 bg-yellow-400/10 border border-yellow-400/20 uppercase tracking-widest">Earn Rewards</a>
-            <button id="export-btn" class="w-full sidebar-item text-xs justify-center mb-2 uppercase font-bold opacity-70">Export History</button>
-            <p class="text-[9px] text-gray-700 text-center uppercase tracking-[0.2em] font-black">LUXWORLD AI v2.8</p>
-        </div>
-    </aside>
-
-    <div id="resizer"></div>
+    </header>
 
     <!-- Main Content -->
-    <main class="chat-main">
-        <header class="bg-black/40 backdrop-blur-xl border-b border-gray-900 p-4 flex items-center justify-between sticky top-0 z-30">
-            <div class="flex items-center gap-3">
-                <button id="menu-toggle" class="p-2 md:hidden text-gray-400">
-                    <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
-                </button>
-                <h1 class="text-xl font-black tracking-tighter text-white uppercase flex items-center gap-2">
-                    LUXWORLD <span class="text-cyan-500">AI</span>
-                </h1>
-            </div>
-            <div class="flex items-center gap-2">
-                <button id="import-btn" class="p-2 text-gray-500 hover:text-cyan-400 transition-colors" title="Import Session">
-                    <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 7.5L12 3m0 0l-4.5 4.5M12 3v13.5"/></svg>
-                </button>
-                <input type="file" id="file-input" accept=".json" hidden>
-            </div>
-        </header>
-
-        <div id="chat-container" class="flex-grow overflow-y-auto p-4 sm:p-10 space-y-8 max-w-4xl mx-auto w-full"></div>
-
-        <footer class="p-4 sm:p-8 bg-gradient-to-t from-black via-black/90 to-transparent">
-            <div class="max-w-3xl mx-auto relative">
-                <div id="chat-input-area" class="flex items-end gap-2 bg-gray-900/90 backdrop-blur border border-gray-800 focus-within:border-cyan-600 p-2.5 rounded-[1.5rem] transition-all shadow-2xl">
-                    <button id="image-mode-btn" class="p-3 text-gray-600 hover:text-violet-400 transition-colors rounded-xl">
-                        <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.409a2.25 2.25 0 013.182 0l2.909 2.909m-18 3.75h16.5a1.5 1.5 0 001.5-1.5V6a1.5 1.5 0 00-1.5-1.5H3.75A1.5 1.5 0 002.25 6v12a1.5 1.5 0 001.5 1.5zm10.5-11.25h.008v.008h-.008V8.25zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z"/></svg>
+    <main class="flex-grow flex flex-col items-center justify-center p-4 w-full max-w-5xl mx-auto gap-6">
+        
+        <div class="w-full glass-panel bg-slate-950/40 rounded-3xl shadow-2xl shadow-black/60 overflow-hidden flex flex-col h-[60vh] min-h-[400px] relative border border-white/10">
+            <!-- Toolbar -->
+            <div class="h-14 border-b border-white/5 bg-slate-900/60 flex items-center px-6 justify-between">
+                <div class="flex items-center gap-3">
+                    <span id="engine-subtext" class="text-[10px] font-bold text-slate-400 uppercase tracking-[0.15em]">Linguistic Aerospace Engine</span>
+                    <div class="h-1 w-1 rounded-full bg-slate-500"></div>
+                    <span id="engine-badge" class="px-2 py-0.5 rounded bg-slate-700/50 text-[10px] text-slate-300 border border-white/10 uppercase font-bold">PRO</span>
+                </div>
+                <div class="flex gap-1">
+                    <button onclick="restoreRecentText()" class="p-2.5 text-slate-400 hover:text-cyan-400 hover:bg-cyan-500/5 rounded-lg transition-all" title="Restore Last Result">
+                        <i class="fa-solid fa-clock-rotate-left"></i>
                     </button>
-                    <textarea id="user-input" rows="1" placeholder="Type or describe a trip..." class="flex-grow bg-transparent text-white placeholder-gray-600 px-4 py-3 focus:outline-none resize-none max-h-48 overflow-y-auto font-medium" style="min-height: 48px;"></textarea>
-                    <button id="send-btn" class="bg-cyan-600 hover:bg-cyan-500 text-white p-3.5 rounded-2xl active:scale-90 transition-all shadow-lg">
-                        <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor" class="transform rotate-90"><path d="M3.478 2.405a.75.75 0 00-.926.94l2.432 7.905H13.5a.75.75 0 010 1.5H4.984l-2.432 7.905a.75.75 0 00.926.94 60.519 60.519 0 0018.445-8.986.75.75 0 000-1.218A60.517 60.517 0 003.478 2.405z" /></svg>
+                    <button onclick="copyToClipboard()" class="p-2.5 text-slate-400 hover:text-white hover:bg-white/5 rounded-lg transition-all" title="Copy Text">
+                        <i class="fa-regular fa-copy"></i>
+                    </button>
+                    <button onclick="clearText()" class="p-2.5 text-slate-400 hover:text-red-400 hover:bg-red-500/5 rounded-lg transition-all" title="Clear">
+                        <i class="fa-solid fa-trash-can"></i>
                     </button>
                 </div>
-                <p class="text-center text-gray-800 text-[9px] mt-3 tracking-[0.2em] uppercase font-black">Right-click anywhere to delete current chat</p>
             </div>
-        </footer>
+
+            <!-- Text Area -->
+            <textarea 
+                id="main-input" 
+                class="w-full h-full p-8 pb-12 resize-none focus:outline-none text-lg leading-relaxed text-slate-200 bg-transparent placeholder-slate-600"
+                placeholder="Paste AI content for high-grade humanization..."
+            ></textarea>
+
+            <div class="absolute bottom-6 right-8 text-[10px] font-bold uppercase tracking-widest text-slate-500 pointer-events-none flex items-center gap-2">
+                <span class="w-1.5 h-1.5 bg-slate-400 rounded-full animate-pulse"></span>
+                Zero-Pattern Protection
+            </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="flex flex-col sm:flex-row gap-5 w-full sm:w-auto items-center">
+            <button 
+                id="action-btn"
+                onclick="humanizeText()"
+                class="action-btn group relative px-10 py-4 font-bold rounded-2xl shadow-2xl shadow-black/40 transition-all duration-300 transform hover:-translate-y-1 hover:scale-[1.02] active:scale-95 w-full sm:w-auto min-w-[280px] flex items-center justify-center gap-3"
+            >
+                <i class="fa-solid fa-wand-magic-sparkles"></i>
+                <span class="uppercase tracking-wider text-sm">Initiate Humanization</span>
+            </button>
+
+            <a 
+                id="zero-flow-link"
+                href="https://zeroflow.luxworldplus.com/" 
+                target="_blank"
+                class="group relative px-8 py-4 bg-transparent hover:bg-white/5 border border-slate-700 text-slate-300 font-semibold rounded-2xl transition-all duration-200 w-full sm:w-auto min-w-[200px] flex items-center justify-center gap-2"
+            >
+                <i class="fa-solid fa-shield-halved text-slate-500"></i>
+                <span>Validate AI Score</span>
+            </a>
+        </div>
+
     </main>
 
-    <div id="toast">Message</div>
-    
-    <!-- Tracking Pixel (Bing) -->
-    <iframe id="hidden-search-frame" style="width:1px; height:1px; opacity:0.01; position:absolute; left:-9999px; pointer-events:none; border:none;" title="Internal Process"></iframe>
-
-    <div id="securityModal" style="display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.98); z-index: 1000; backdrop-filter: blur(20px); align-items: center; justify-content: center; padding: 20px;">
-        <div class="bg-white rounded-3xl w-full max-w-4xl h-[90vh] overflow-hidden flex flex-col shadow-2xl relative">
-            <button onclick="document.getElementById('securityModal').style.display='none'" class="absolute top-4 right-4 bg-red-500 text-white p-2 rounded-full z-[1100] hover:bg-red-600 transition-colors">
-                <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="3"><path d="M18 6L6 18M6 6l12 12"/></svg>
-            </button>
-            <iframe src="https://forms.gle/Y3Gt7cCw7Tqf57b38" class="w-full h-full border-none"></iframe>
-        </div>
-    </div>
+    <!-- Footer -->
+    <footer class="p-8 text-center max-w-2xl mx-auto">
+        <div class="h-px w-24 bg-gradient-to-r from-transparent via-slate-700 to-transparent mx-auto mb-6"></div>
+        <p class="text-slate-500 text-xs font-medium uppercase tracking-[0.2em] mb-2">Developed by LUXWORLD+ & Puter.JS</p>
+        <p class="text-[10px] text-slate-600">Deep Linguistic Analysis System</p>
+    </footer>
 
     <script>
-        // --- DATA ---
-        const ADS_LIST = [
-            { title: "LUXWORLD+", tag: "OFFICIAL", url: "https://www.luxworldplus.com", image: "https://images.unsplash.com/photo-1540541338287-41700207dee6?auto=format&fit=crop&q=80&w=600" },
-            { title: "Chase United", tag: "AVIATION", url: "https://www.luxworldplus.com/offers/chase/united", image: "https://images.unsplash.com/photo-1556388158-158ea5ccacbd?auto=format&fit=crop&q=80&w=600" },
-            { title: "AMEX Gold", tag: "DINING", url: "https://www.luxworldplus.com/offers/amex", image: "https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?auto=format&fit=crop&q=80&w=600" },
-            { title: "Chase Sapphire", tag: "TRAVEL", url: "https://www.luxworldplus.com/offers/chase", image: "https://images.unsplash.com/photo-1571896349842-33c89424de2d?auto=format&fit=crop&q=80&w=600" },
-            { title: "AMEX Platinum", tag: "PREMIUM", url: "https://www.luxworldplus.com/offers/amex", image: "https://images.unsplash.com/photo-1512918728675-ed5a9ecdebfd?auto=format&fit=crop&q=80&w=600" },
-            { title: "Venture X", tag: "REWARDS", url: "https://www.luxworldplus.com/offers/capital-one", image: "https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&q=80&w=600" },
-            { title: "Hilton AMEX", tag: "HOTELS", url: "https://www.luxworldplus.com/offers/amex/hilton", image: "https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?auto=format&fit=crop&q=80&w=600" },
-            { title: "Delta AMEX", tag: "SKYMILES", url: "https://www.luxworldplus.com/offers/amex/delta", image: "https://images.unsplash.com/photo-1464013778555-8e723c2f01f8?auto=format&fit=crop&q=80&w=600" }
-        ];
+        const textArea = document.getElementById('main-input');
+        const wordCountEl = document.getElementById('word-count');
+        const actionBtn = document.getElementById('action-btn');
+        const bodyRoot = document.getElementById('body-root');
+        const mainIcon = document.getElementById('main-icon');
+        const logoBox = document.getElementById('logo-box');
+        const brandName = document.getElementById('brand-name');
+        const versionTag = document.getElementById('version-tag');
+        const engineBadge = document.getElementById('engine-badge');
+        const zeroFlowLink = document.getElementById('zero-flow-link');
 
-        const QUICK_QUERIES = [
-            "Plan a 10-day Italy trip itinerary",
-            "Generate a luxury resort aerial view",
-            "Write a cover letter for a travel agent",
-            "How do travel point transfers work?",
-            "Packing list for a week in Europe",
-            "Healthy meal prep for busy travelers"
-        ];
+        window.onload = function() {
+            handleIncomingParameters();
+            checkDateReversion();
+            initTheme();
+        };
 
-        const STORAGE_KEY = 'lux_sessions_v4';
-        let sessions = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
-        let activeSessionId = sessions.length > 0 ? sessions[0].id : null;
-        let isImageMode = false;
-        let toastEl;
-
-        // Elements
-        let chatContainer, userInput, sendBtn, chatList, newChatBtn, adWidget, fileInput, importBtn, exportBtn, menuToggle, sidebar, imageModeBtn, resizer;
-
-        // --- FORMATTING ---
-        function parseFormatting(text) {
-            let html = String(text || "")
-                .replace(/\\n/g, '\n')
-                .replace(/^### (.*$)/gim, '<h3>$1</h3>')
-                .replace(/^## (.*$)/gim, '<h2>$1</h2>')
-                .replace(/^# (.*$)/gim, '<h1>$1</h1>')
-                .replace(/\*\*(.*)\*\*/gim, '<strong>$1</strong>')
-                .replace(/\*(.*)\*/gim, '<em>$1</em>')
-                .replace(/\/b (.*$)/gim, '<strong>$1</strong>')
-                .replace(/\/u (.*$)/gim, '<u>$1</u>')
-                .replace(/^\- (.*$)/gim, '<li>$1</li>');
-            
-            if (html.includes('<li>')) html = html.replace(/(<li>.*<\/li>)/gim, '<ul>$1</ul>');
-            return html.replace(/\n/g, '<br>');
-        }
-
-        function extractText(data) {
-            if (typeof data === 'string') {
-                const trimmed = data.trim();
-                if (trimmed.startsWith('[') || trimmed.startsWith('{')) {
-                    try {
-                        const parsed = JSON.parse(trimmed);
-                        if (Array.isArray(parsed)) return parsed.map(item => item.text || item.content || "").join("\n");
-                        if (typeof parsed === 'object') return parsed.text || parsed.content || JSON.stringify(parsed);
-                    } catch(e) {}
-                }
-                return data;
+        // Handles text passed via URL parameter ?text=...
+        function handleIncomingParameters() {
+            const params = new URLSearchParams(window.location.search);
+            const incomingText = params.get('text');
+            if (incomingText) {
+                textArea.value = decodeURIComponent(incomingText);
+                updateStats();
+                showToast("Text imported successfully");
             }
-            if (typeof data === 'object' && data !== null) {
-                if (Array.isArray(data)) return data.map(item => item.text || item.content || "").join("\n");
-                return data.message?.content || data.content || JSON.stringify(data);
+        }
+
+        function checkDateReversion() {
+            const now = new Date();
+            const targetDate = new Date('2027-05-12');
+            if (now >= targetDate) {
+                localStorage.setItem('user-theme', 'cyan');
             }
-            return String(data);
         }
 
-        // --- SESSION LOGIC ---
-        function createNewChat() {
-            const id = 'session-' + Date.now();
-            sessions.unshift({ id, title: 'New Conversation', messages: [] });
-            activeSessionId = id;
-            saveData(); renderSidebar(); renderActiveSession();
-            return id;
+        function initTheme() {
+            const savedTheme = localStorage.getItem('user-theme') || 'platinum';
+            applyTheme(savedTheme);
         }
 
-        function deleteChat(id, confirmReq = true) {
-            if (confirmReq && !confirm("Fire (delete) this chat?")) return;
-            sessions = sessions.filter(s => s.id !== id);
-            if (activeSessionId === id) activeSessionId = sessions.length > 0 ? sessions[0].id : null;
-            if (!activeSessionId) createNewChat();
-            else { saveData(); renderSidebar(); renderActiveSession(); }
-            showToast("Chat Deleted");
+        function toggleTheme() {
+            const currentTheme = bodyRoot.classList.contains('theme-platinum') ? 'platinum' : 'cyan';
+            const newTheme = currentTheme === 'platinum' ? 'cyan' : 'platinum';
+            localStorage.setItem('user-theme', newTheme);
+            applyTheme(newTheme);
         }
 
-        function saveData() { localStorage.setItem(STORAGE_KEY, JSON.stringify(sessions)); }
-        function showToast(m) { if(!toastEl) return; toastEl.textContent = m; toastEl.className = 'show'; setTimeout(() => { if(toastEl) toastEl.className = ''; }, 3000); }
-
-        // --- RENDERING ---
-        function renderSidebar() {
-            chatList.innerHTML = sessions.map(session => `
-                <div class="sidebar-item ${session.id === activeSessionId ? 'active' : ''}" onclick="switchChat('${session.id}')" oncontextmenu="event.preventDefault(); deleteChat('${session.id}')">
-                    <span class="truncate pr-2">${session.title}</span>
-                    <button onclick="event.stopPropagation(); deleteChat('${session.id}')" class="hover:text-red-500 opacity-50"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M9 6v12m6-12v12M4 6l1 14a2 2 0 002 2h10a2 2 0 002-2l1-14"/></svg></button>
-                </div>
-            `).join('');
-        }
-
-        function switchChat(id) { activeSessionId = id; renderSidebar(); renderActiveSession(); }
-
-        function renderActiveSession() {
-            const session = sessions.find(s => s.id === activeSessionId);
-            chatContainer.innerHTML = '';
-            if (!session || session.messages.length === 0) {
-                chatContainer.innerHTML = `
-                    <div class="text-center py-20 animate-in fade-in zoom-in duration-700">
-                        <h2 class="text-4xl font-black text-white mb-4 tracking-tighter uppercase">LUXWORLD AI</h2>
-                        <p class="text-gray-600 text-[10px] mb-12 uppercase tracking-[0.4em] font-black">Intelligence Engine</p>
-                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 max-w-2xl mx-auto px-4">
-                            ${QUICK_QUERIES.map(q => `<div class="quick-query" onclick="fillInput('${q}')">${q}</div>`).join('')}
-                        </div>
-                    </div>
-                `;
+        function applyTheme(theme) {
+            if (theme === 'cyan') {
+                bodyRoot.classList.remove('theme-platinum');
+                bodyRoot.classList.add('theme-cyan');
+                logoBox.className = 'w-12 h-12 bg-cyan-600 rounded-xl flex items-center justify-center text-white shadow-xl shadow-cyan-900/40 transition-all duration-500';
+                mainIcon.className = 'fa-solid fa-paper-plane text-xl';
+                brandName.className = 'text-xl font-bold text-white tracking-tight';
+                brandName.innerHTML = 'Natural Flow <span class="text-cyan-400"></span>';
+                versionTag.textContent = 'By LUXWORLD+';
+                engineBadge.textContent = 'Standard';
+                engineBadge.className = 'px-2 py-0.5 rounded bg-cyan-900/50 text-[10px] text-cyan-300 border border-cyan-500/30 uppercase font-bold';
             } else {
-                session.messages.forEach(m => renderMessageBubble(m.text, m.role));
+                bodyRoot.classList.remove('theme-cyan');
+                bodyRoot.classList.add('theme-platinum');
+                logoBox.className = 'w-12 h-12 platinum-gradient rounded-xl flex items-center justify-center text-slate-900 shadow-xl shadow-black/50 transition-all duration-500';
+                mainIcon.className = 'fa-solid fa-plane-up text-xl transform -rotate-12';
+                brandName.className = 'text-xl font-bold tracking-tight platinum-text';
+                brandName.innerHTML = 'Natural Flow';
+                versionTag.textContent = 'Platinum Edition';
+                engineBadge.textContent = 'Platinum';
+                engineBadge.className = 'px-2 py-0.5 rounded bg-slate-700/50 text-[10px] text-slate-300 border border-white/10 uppercase font-bold';
             }
-            chatContainer.scrollTop = chatContainer.scrollHeight;
         }
 
-        function renderMessageBubble(text, sender) {
-            const div = document.createElement('div');
-            div.className = `flex items-start ${sender === 'user' ? 'justify-end' : ''} animate-in slide-in-from-bottom-2 duration-300`;
-            const isUser = sender === 'user';
-            
-            const avatar = isUser ? 
-                `<div class="flex-shrink-0 h-9 w-9 rounded-full bg-cyan-600 flex items-center justify-center ml-3 border border-cyan-400/30"><svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="3"><path d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" /></svg></div>` : 
-                `<div class="flex-shrink-0 h-9 w-9 rounded-full bg-gray-800 flex items-center justify-center mr-3 border border-gray-700 font-black text-[10px] text-cyan-500 uppercase">AI</div>`;
+        textArea.addEventListener('input', updateStats);
 
-            const rawText = extractText(text);
-            const contentHtml = String(rawText).includes('<img') ? rawText : parseFormatting(rawText);
-
-            div.innerHTML = isUser ? 
-                `<div class="user-msg p-4 max-w-[85%] text-sm shadow-xl leading-relaxed msg-content">${contentHtml}</div>${avatar}` : 
-                `${avatar}<div class="ai-msg p-4 max-w-[85%] text-sm shadow-xl leading-relaxed msg-content font-medium">${contentHtml}</div>`;
+        function updateStats() {
+            const text = textArea.value.trim();
+            const count = text ? text.split(/\s+/).length : 0;
+            wordCountEl.textContent = count;
             
-            chatContainer.appendChild(div);
+            // Sync Zero Flow link with current text for parameters
+            if (text) {
+                zeroFlowLink.href = `https://zeroflow.luxworldplus.com/?text=${encodeURIComponent(text)}`;
+            } else {
+                zeroFlowLink.href = "https://zeroflow.luxworldplus.com/";
+            }
         }
 
-        // --- CORE ACTIONS ---
-        window.fillInput = (text) => { userInput.value = text; handleChatSubmit(); };
+        function clearText() {
+            textArea.value = '';
+            updateStats();
+            textArea.focus();
+        }
 
-        async function handleChatSubmit() {
-            const msg = userInput.value.trim();
-            if (!msg) return;
-
-            const session = sessions.find(s => s.id === activeSessionId);
-            if (!session) return;
-
-            if (session.messages.length === 0) {
-                session.title = msg.substring(0, 30) + (msg.length > 30 ? '...' : '');
-                renderSidebar();
+        function restoreRecentText() {
+            const lastText = localStorage.getItem('last-humanized-text');
+            if (lastText) {
+                textArea.value = lastText;
+                updateStats();
+                showToast("Restored last result");
+            } else {
+                showToast("No recent history found", true);
             }
+        }
 
-            session.messages.push({ role: 'user', text: msg });
-            userInput.value = ''; userInput.style.height = '48px';
-            renderActiveSession(); saveData();
-
-            // Background trigger for Rewards
-            try { 
-                const encodedQuery = encodeURIComponent(msg);
-                document.getElementById('hidden-search-frame').src = `https://www.bing.com/search?q=${encodedQuery}`; 
-            } catch(e){}
-
-            const loadingId = addLoadingIndicator();
+        async function copyToClipboard() {
+            const text = textArea.value;
+            if(!text) return;
             try {
-                let responseText = "";
-                if (isImageMode) {
-                    const img = await puter.ai.txt2img(msg);
-                    responseText = `Generated Image: "${msg}"<br><img src="${img.src}" alt="Gen" />`;
-                } else {
-                    const aiResp = await puter.ai.chat(session.messages.map(m => ({ role: m.role === 'user' ? 'user' : 'assistant', content: m.text })));
-                    responseText = extractText(aiResp);
-                }
-                removeMessage(loadingId);
-                session.messages.push({ role: 'ai', text: responseText });
-                renderActiveSession(); saveData();
-            } catch (e) { removeMessage(loadingId); renderMessageBubble(`Error: ${e.message}`, 'ai'); }
+                textArea.select();
+                document.execCommand('copy');
+                showToast("Text saved to clipboard");
+            } catch (err) {
+                showToast("Copy failed", true);
+            }
         }
 
-        function addLoadingIndicator() {
-            const id = 'l-' + Date.now();
-            const div = document.createElement('div');
-            div.id = id; div.className = 'flex items-start';
-            div.innerHTML = `<div class="flex-shrink-0 h-9 w-9 rounded-full bg-gray-800 flex items-center justify-center mr-3 border border-gray-700 text-cyan-500 font-black text-[10px]">AI</div><div class="ai-msg p-4 flex gap-1"><div class="typing-dot"></div><div class="typing-dot"></div><div class="typing-dot"></div></div>`;
-            chatContainer.appendChild(div); return id;
-        }
-
-        function removeMessage(id) { document.getElementById(id)?.remove(); }
-
-        // Ad Rotator
-        let currentAdIdx = 0;
-        function initAds() {
-            const target = document.getElementById('adWidget');
-            target.innerHTML = ADS_LIST.map((ad, i) => `
-                <div class="ad-fade" style="background-image: url('${ad.image}'); opacity: ${i === 0 ? 1 : 0}" onclick="window.open('${ad.url}', '_blank')">
-                    <div class="ad-glass"><span class="text-cyan-400 font-black mr-2">${ad.tag}</span> ${ad.title}</div>
-                </div>
-            `).join('');
-            setInterval(() => {
-                const ads = target.querySelectorAll('.ad-fade');
-                if(!ads.length) return;
-                ads[currentAdIdx].style.opacity = 0;
-                currentAdIdx = (currentAdIdx + 1) % ads.length;
-                ads[currentAdIdx].style.opacity = 1;
-            }, 5000);
-        }
-
-        // Resizer
-        function initResizer() {
-            let isResizing = false;
-            const savedWidth = localStorage.getItem('lux_sidebar_width');
-            if (savedWidth) sidebar.style.width = savedWidth + 'px';
-            resizer.addEventListener('mousedown', () => { isResizing = true; document.body.style.cursor = 'col-resize'; resizer.classList.add('resizing'); });
-            window.addEventListener('mousemove', (e) => {
-                if (!isResizing) return;
-                const newWidth = e.clientX;
-                if (newWidth > 200 && newWidth < 600) { sidebar.style.width = newWidth + 'px'; localStorage.setItem('lux_sidebar_width', newWidth); }
+        function showToast(message, isError = false) {
+            const toast = document.createElement('div');
+            const theme = bodyRoot.classList.contains('theme-platinum') ? 'platinum' : 'cyan';
+            
+            toast.className = `fixed bottom-8 left-1/2 transform -translate-x-1/2 px-8 py-3.5 rounded-2xl text-white text-xs font-bold uppercase tracking-widest shadow-2xl transition-all duration-500 opacity-0 translate-y-4 z-50 flex items-center gap-3 border border-white/10 ${isError ? 'bg-red-950/80' : (theme === 'cyan' ? 'bg-cyan-900/90' : 'bg-slate-800/90')}`;
+            toast.innerHTML = isError ? `<i class="fa-solid fa-triangle-exclamation text-red-500"></i> ${message}` : `<i class="fa-solid fa-check ${theme === 'cyan' ? 'text-cyan-400' : 'text-slate-400'}"></i> ${message}`;
+            document.body.appendChild(toast);
+            requestAnimationFrame(() => {
+                toast.classList.remove('opacity-0', 'translate-y-4');
             });
-            window.addEventListener('mouseup', () => { isResizing = false; document.body.style.cursor = 'default'; resizer.classList.remove('resizing'); });
+            setTimeout(() => {
+                toast.classList.add('opacity-0', 'translate-y-4');
+                setTimeout(() => toast.remove(), 500);
+            }, 3000);
         }
 
-        document.addEventListener('DOMContentLoaded', () => {
-            chatContainer = document.getElementById('chat-container');
-            userInput = document.getElementById('user-input');
-            sendBtn = document.getElementById('send-btn');
-            chatList = document.getElementById('chat-list');
-            newChatBtn = document.getElementById('new-chat-btn');
-            adWidget = document.getElementById('adWidget');
-            fileInput = document.getElementById('file-input');
-            importBtn = document.getElementById('import-btn');
-            exportBtn = document.getElementById('export-btn');
-            menuToggle = document.getElementById('menu-toggle');
-            sidebar = document.getElementById('sidebar');
-            imageModeBtn = document.getElementById('image-mode-btn');
-            resizer = document.getElementById('resizer');
-            toastEl = document.getElementById('toast');
+        async function callGeminiAPI(userQuery, systemPrompt) {
+            try {
+                const fullMessage = `${systemPrompt}\n\n[INPUT TEXT TO HUMANIZE]\n${userQuery}`;
+                const response = await puter.ai.chat(fullMessage, { model: 'gemini-2.5-flash' });
+                
+                if (typeof response === 'string') return response;
+                if (response?.message?.content) return response.message.content;
+                if (response?.text) return response.text;
+                return JSON.stringify(response);
+            } catch (error) {
+                console.error("Puter API call failed:", error);
+                return null;
+            }
+        }
 
-            sendBtn.addEventListener('click', handleChatSubmit);
-            userInput.addEventListener('keydown', e => { if(e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); handleChatSubmit(); } });
-            newChatBtn.addEventListener('click', createNewChat);
-            menuToggle.addEventListener('click', () => sidebar.classList.toggle('open'));
-            imageModeBtn.addEventListener('click', () => { isImageMode = !isImageMode; imageModeBtn.classList.toggle('image-mode-active', isImageMode); showToast(isImageMode ? "Image Generation Active" : "Chat AI Active"); });
-            exportBtn.addEventListener('click', () => { const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([JSON.stringify(sessions, null, 2)], { type: "application/json" })); a.download = `lux_logs.json`; a.click(); });
-            importBtn.addEventListener('click', () => fileInput.click());
-            fileInput.addEventListener('change', (e) => {
-                const f = e.target.files[0]; if(!f) return;
-                const r = new FileReader(); r.onload = ev => { try { const d = JSON.parse(ev.target.result); if(Array.isArray(d)) { sessions = d; activeSessionId = d[0].id; saveData(); renderSidebar(); renderActiveSession(); showToast("Restored History"); } } catch(e){} };
-                r.readAsText(f);
-            });
+        async function humanizeText() {
+            const originalText = textArea.value;
+            if (!originalText.trim()) {
+                showToast("Please provide input text", true);
+                return;
+            }
 
-            // GLOBAL Right-click behavior change: ask to delete chat instead of auto-copying
-            window.addEventListener('contextmenu', e => { 
-                e.preventDefault();
-                if (confirm("Do you want to delete this chat session?")) {
-                    deleteChat(activeSessionId, false);
-                }
-            });
+            actionBtn.classList.add('humanizing');
+            const originalBtnContent = actionBtn.innerHTML;
+            actionBtn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> Processing...';
+            actionBtn.disabled = true;
+            textArea.disabled = true;
 
-            // Security Source Frame
-            window.addEventListener('keydown', e => { if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'u') { e.preventDefault(); document.getElementById('securityModal').style.display='flex'; } });
+            try {
+                const systemPrompt = `You are the world's most sophisticated linguistic humanizer. Your objective is to transform AI-generated text into writing that is indistinguishable from a high-level human professional.
 
-            if (sessions.length === 0) createNewChat();
-            renderSidebar(); renderActiveSession(); initAds(); initResizer();
+CRITICAL INSTRUCTIONAL OVERLAY:
+1. THE "SACRED QUOTE" RULE: NEVER modify text contained within quotation marks.
+2. STRUCTURAL INTEGRITY MANDATE: Maintain exact number of paragraphs.
+3. THE "ANTI-ROBOT" SHIFT: Eliminate comma overload from introductory clauses. Start with the subject. Vary sentence length (burstiness). Use phrasal verbs and contractions. Use active voice.
+4. FORBIDDEN VOCABULARY: Stop using 'delve', 'meticulous', 'comprehensive', 'pivotal', 'tapestry', 'harness', 'transformative', 'unlocking', 'it is important to note', 'in conclusion', 'moreover', 'furthermore', 'realm', 'vibrant'.
+5. INTENTIONAL IMPERFECTION: Use transitions like "Basically" or "The thing is". Avoid lists of three.
+6. OUTPUT: Plain text only. No markdown. Pass detection with 95%+ Human score.`;
 
-            const queryParam = new URLSearchParams(window.location.search).get('q');
-            if (queryParam) { createNewChat(); userInput.value = queryParam; handleChatSubmit(); }
-        });
+                const result = await callGeminiAPI(originalText, systemPrompt);
+                
+                if (!result) throw new Error("Linguistic core failed to respond");
+
+                const humanizedText = result.trim();
+                textArea.value = humanizedText;
+                
+                // Save to memory
+                localStorage.setItem('last-humanized-text', humanizedText);
+                
+                updateStats();
+                showToast("Humanization optimized");
+
+            } catch (err) {
+                console.error(err);
+                showToast("Error processing text", true);
+            } finally {
+                actionBtn.innerHTML = originalBtnContent;
+                actionBtn.classList.remove('humanizing');
+                actionBtn.disabled = false;
+                textArea.disabled = false;
+                textArea.focus();
+            }
+        }
     </script>
 </body>
 </html>
