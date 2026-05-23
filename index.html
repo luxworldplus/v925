@@ -80,6 +80,12 @@
 
     <!-- Sidebar -->
     <aside id="sidebar" class="sidebar">
+        <!-- Mobile Close Button -->
+        <div class="flex justify-end p-2 md:hidden border-b border-gray-900 bg-black/40">
+            <button id="sidebar-close-btn" class="p-1 text-gray-400 hover:text-white rounded-lg hover:bg-gray-800 transition-all active:scale-95" title="Close Sidebar">
+                <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 6L6 18M6 6l12 12"/></svg>
+            </button>
+        </div>
         <div id="adWidgetContainer">
             <div id="adWidget"></div>
         </div>
@@ -128,9 +134,21 @@
 
         <footer class="p-4 sm:p-8 bg-gradient-to-t from-black via-black/90 to-transparent">
             <div class="max-w-3xl mx-auto relative">
+                <!-- PREVIEW CONTAINER FOR ATTACHED FILES/SCREENSHOTS -->
+                <div id="attachment-preview-container" class="hidden flex flex-wrap gap-2 mb-2.5 p-2 bg-gray-950/60 rounded-xl border border-gray-800"></div>
+
                 <div id="chat-input-area" class="flex items-end gap-2 bg-gray-900/90 backdrop-blur border border-gray-800 focus-within:border-cyan-600 p-2.5 rounded-[1.5rem] transition-all shadow-2xl">
-                    <button id="image-mode-btn" class="p-3 text-gray-600 hover:text-violet-400 transition-colors rounded-xl">
+                    <button id="image-mode-btn" class="p-3 text-gray-600 hover:text-violet-400 transition-colors rounded-xl" title="Toggle Image Mode">
                         <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.409a2.25 2.25 0 013.182 0l2.909 2.909m-18 3.75h16.5a1.5 1.5 0 001.5-1.5V6a1.5 1.5 0 00-1.5-1.5H3.75A1.5 1.5 0 002.25 6v12a1.5 1.5 0 001.5 1.5zm10.5-11.25h.008v.008h-.008V8.25zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z"/></svg>
+                    </button>
+                    <!-- Add Files Button -->
+                    <button id="add-files-btn" class="p-3 text-gray-600 hover:text-cyan-400 transition-colors rounded-xl" title="Add Files">
+                        <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M18.364 18.364A9 9 0 005.636 5.636l-8.486 8.486a6 6 0 01-8.486-8.486l10.607-10.607a3 3 0 014.243 4.243l-9.9 9.9a1.5 1.5 0 11-2.122-2.122l8.485-8.485" /></svg>
+                    </button>
+                    <input type="file" id="chat-file-input" multiple class="hidden">
+                    <!-- Lens Screen Capture Button -->
+                    <button id="lens-btn" class="p-3 text-gray-600 hover:text-yellow-400 transition-colors rounded-xl" title="Screen Capture (Lens)">
+                        <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" /><circle cx="12" cy="12" r="3" /><path stroke-linecap="round" stroke-linejoin="round" d="M12 3v2M12 19v2M3 12h2M19 12h2" /></svg>
                     </button>
                     <textarea id="user-input" rows="1" placeholder="Type or describe a trip..." class="flex-grow bg-transparent text-white placeholder-gray-600 px-4 py-3 focus:outline-none resize-none max-h-48 overflow-y-auto font-medium" style="min-height: 48px;"></textarea>
                     <button id="send-btn" class="bg-cyan-600 hover:bg-cyan-500 text-white p-3.5 rounded-2xl active:scale-90 transition-all shadow-lg">
@@ -184,9 +202,11 @@
         let activeSessionId = sessions.length > 0 ? sessions[0].id : null;
         let isImageMode = false;
         let toastEl;
+        let attachedFiles = [];
 
         // Elements
-        let chatContainer, userInput, sendBtn, chatList, newChatBtn, adWidget, fileInput, importBtn, exportBtn, menuToggle, sidebar, imageModeBtn, resizer, themeToggleBtn;
+        let chatContainer, userInput, sendBtn, chatList, newChatBtn, adWidget, fileInput, importBtn, exportBtn, menuToggle, sidebar, imageModeBtn, resizer, themeToggleBtn, sidebarCloseBtn;
+        let addFilesBtn, chatFileInput, lensBtn, attachmentPreviewContainer;
 
         // --- FORMATTING ---
         function parseFormatting(text) {
@@ -276,6 +296,115 @@
             chatContainer.scrollTop = chatContainer.scrollHeight;
         }
 
+        // --- ATTACHMENT LOGIC ---
+        function handleFiles(files) {
+            Array.from(files).forEach(file => {
+                const fileId = 'file-' + Date.now() + '-' + Math.random().toString(36).substr(2, 5);
+                const isImage = file.type.startsWith('image/');
+                
+                const attachedFile = {
+                    id: fileId,
+                    file: file,
+                    name: file.name,
+                    type: file.type,
+                    dataUrl: ''
+                };
+                
+                if (isImage) {
+                    const reader = new FileReader();
+                    reader.onload = (e) => {
+                        attachedFile.dataUrl = e.target.result;
+                        attachedFiles.push(attachedFile);
+                        renderAttachmentPreviews();
+                    };
+                    reader.readAsDataURL(file);
+                } else {
+                    const reader = new FileReader();
+                    reader.onload = (e) => {
+                        attachedFile.content = e.target.result;
+                        attachedFiles.push(attachedFile);
+                        renderAttachmentPreviews();
+                    };
+                    reader.readAsText(file);
+                }
+            });
+        }
+
+        function renderAttachmentPreviews() {
+            if (attachedFiles.length === 0) {
+                attachmentPreviewContainer.classList.add('hidden');
+                attachmentPreviewContainer.innerHTML = '';
+                return;
+            }
+            attachmentPreviewContainer.classList.remove('hidden');
+            attachmentPreviewContainer.innerHTML = attachedFiles.map(af => {
+                const isImage = af.type.startsWith('image/');
+                const display = isImage 
+                    ? `<img src="${af.dataUrl}" class="h-12 w-12 object-cover rounded-lg border border-gray-700">`
+                    : `<div class="h-12 w-12 bg-gray-800 text-[9px] font-black uppercase text-cyan-400 rounded-lg flex items-center justify-center p-1 border border-gray-700 text-center truncate">${af.name.split('.').pop() || 'FILE'}</div>`;
+                
+                return `
+                    <div class="relative group flex items-center gap-2 bg-black/40 border border-gray-800 p-1.5 rounded-xl pr-6">
+                        ${display}
+                        <div class="flex flex-col text-[10px] max-w-[120px]">
+                            <span class="font-bold text-gray-200 truncate">${af.name}</span>
+                            <span class="text-gray-500 uppercase font-black text-[8px]">${(af.file.size / 1024).toFixed(1)} KB</span>
+                        </div>
+                        <button onclick="event.stopPropagation(); removeAttachment('${af.id}')" class="absolute top-1 right-1 text-gray-500 hover:text-red-400 transition-colors">
+                            <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M18 6L6 18M6 6l12 12"/></svg>
+                        </button>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        window.removeAttachment = (id) => {
+            attachedFiles = attachedFiles.filter(af => af.id !== id);
+            renderAttachmentPreviews();
+        };
+
+        // --- SCREEN CAPTURE (LENS) ---
+        async function captureScreen() {
+            try {
+                showToast("Selecting screen to capture...");
+                const stream = await navigator.mediaDevices.getDisplayMedia({
+                    video: { cursor: "always" },
+                    audio: false
+                });
+                
+                const video = document.createElement('video');
+                video.srcObject = stream;
+                
+                video.onloadedmetadata = () => {
+                    video.play();
+                    
+                    setTimeout(() => {
+                        const canvas = document.createElement('canvas');
+                        canvas.width = video.videoWidth;
+                        canvas.height = video.videoHeight;
+                        
+                        const ctx = canvas.getContext('2d');
+                        ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+                        
+                        stream.getTracks().forEach(track => track.stop());
+                        
+                        const dataUrl = canvas.toDataURL('image/png');
+                        
+                        fetch(dataUrl)
+                            .then(res => res.blob())
+                            .then(blob => {
+                                const file = new File([blob], `screenshot-${Date.now()}.png`, { type: 'image/png' });
+                                handleFiles([file]);
+                                showToast("Screenshot attached!");
+                            });
+                    }, 500);
+                };
+            } catch (err) {
+                console.error("Screen capture failed: ", err);
+                showToast("Screen capture declined");
+            }
+        }
+
         function renderMessageBubble(text, sender) {
             const div = document.createElement('div');
             div.className = `flex items-start ${sender === 'user' ? 'justify-end' : ''} animate-in slide-in-from-bottom-2 duration-300`;
@@ -300,23 +429,41 @@
 
         async function handleChatSubmit() {
             const msg = userInput.value.trim();
-            if (!msg) return;
+            if (!msg && attachedFiles.length === 0) return;
 
             const session = sessions.find(s => s.id === activeSessionId);
             if (!session) return;
 
+            let displayMsg = msg;
+            let fileContext = "";
+            let fileAttachmentsHtml = "";
+
+            attachedFiles.forEach(af => {
+                if (af.type.startsWith('image/')) {
+                    fileAttachmentsHtml += `<br><img src="${af.dataUrl}" alt="${af.name}" class="max-h-60 rounded-xl border border-white/10 mt-2">`;
+                } else {
+                    fileAttachmentsHtml += `<br><div class="mt-2 p-2 bg-black/40 rounded-lg border border-gray-800 text-xs flex items-center gap-2"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg> <span>${af.name}</span></div>`;
+                    fileContext += `\n\n[File Attached: ${af.name}]\n${af.content || ''}`;
+                }
+            });
+
             if (session.messages.length === 0) {
-                session.title = msg.substring(0, 30) + (msg.length > 30 ? '...' : '');
+                session.title = msg ? (msg.substring(0, 30) + (msg.length > 30 ? '...' : '')) : attachedFiles[0].name;
                 renderSidebar();
             }
 
-            session.messages.push({ role: 'user', text: msg });
+            session.messages.push({ role: 'user', text: displayMsg + fileAttachmentsHtml });
             userInput.value = ''; userInput.style.height = '48px';
+            
+            // Send content plus text file data if present
+            const sendTextContent = displayMsg + fileContext;
+            attachedFiles = [];
+            renderAttachmentPreviews();
             renderActiveSession(); saveData();
 
             // Background trigger for Rewards
             try { 
-                const encodedQuery = encodeURIComponent(msg);
+                const encodedQuery = encodeURIComponent(displayMsg || "luxworld search");
                 document.getElementById('hidden-search-frame').src = `https://www.bing.com/search?q=${encodedQuery}`; 
             } catch(e){}
 
@@ -324,8 +471,8 @@
             try {
                 let responseText = "";
                 if (isImageMode) {
-                    const img = await puter.ai.txt2img(msg);
-                    responseText = `Generated Image: "${msg}"<br><img src="${img.src}" alt="Gen" />`;
+                    const img = await puter.ai.txt2img(sendTextContent);
+                    responseText = `Generated Image: "${sendTextContent}"<br><img src="${img.src}" alt="Gen" />`;
                 } else {
                     const aiResp = await puter.ai.chat(session.messages.map(m => ({ role: m.role === 'user' ? 'user' : 'assistant', content: m.text })));
                     responseText = extractText(aiResp);
@@ -434,15 +581,33 @@
             resizer = document.getElementById('resizer');
             toastEl = document.getElementById('toast');
             themeToggleBtn = document.getElementById('theme-toggle-btn');
+            sidebarCloseBtn = document.getElementById('sidebar-close-btn');
+            
+            // New Attachments and Screen Capture inputs
+            addFilesBtn = document.getElementById('add-files-btn');
+            chatFileInput = document.getElementById('chat-file-input');
+            lensBtn = document.getElementById('lens-btn');
+            attachmentPreviewContainer = document.getElementById('attachment-preview-container');
 
             sendBtn.addEventListener('click', handleChatSubmit);
             userInput.addEventListener('keydown', e => { if(e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); handleChatSubmit(); } });
             newChatBtn.addEventListener('click', createNewChat);
             menuToggle.addEventListener('click', () => sidebar.classList.toggle('open'));
+            sidebarCloseBtn.addEventListener('click', () => sidebar.classList.remove('open'));
             imageModeBtn.addEventListener('click', () => { isImageMode = !isImageMode; imageModeBtn.classList.toggle('image-mode-active', isImageMode); showToast(isImageMode ? "Image Mode" : "Chat Mode"); });
             exportBtn.addEventListener('click', () => { const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([JSON.stringify(sessions, null, 2)], { type: "application/json" })); a.download = `lux_logs.json`; a.click(); });
             importBtn.addEventListener('click', () => fileInput.click());
             themeToggleBtn.addEventListener('click', toggleTheme);
+
+            // New listeners
+            addFilesBtn.addEventListener('click', () => chatFileInput.click());
+            chatFileInput.addEventListener('change', (e) => {
+                if (e.target.files.length > 0) {
+                    handleFiles(e.target.files);
+                    e.target.value = ''; // Reset file input
+                }
+            });
+            lensBtn.addEventListener('click', captureScreen);
 
             fileInput.addEventListener('change', (e) => {
                 const f = e.target.files[0]; if(!f) return;
