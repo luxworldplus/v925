@@ -97,9 +97,13 @@
         </div>
         <div id="chat-list" class="flex-grow overflow-y-auto p-2 space-y-1"></div>
         
-        <div class="p-4 border-t border-gray-800 bg-black/20">
-             <a id="rewards-link" href="https://rewards.bing.com/welcome?rh=r8_Kq_R0jCo&ref=rafsrchae&form=ML2XE3&OCID=ML2XE3&PUBL=RewardsDO&CREA=ML2XE3" target="_blank" class="sidebar-item text-xs justify-center mb-2 font-black text-yellow-400 bg-yellow-400/10 border border-yellow-400/20 uppercase tracking-widest hover:bg-yellow-400/25">Earn Rewards</a>
-            <div class="flex flex-col gap-1.5 mb-2">
+        <div class="p-4 border-t border-gray-800 bg-black/20 space-y-1.5">
+             <a id="rewards-link" href="https://rewards.bing.com/welcome?rh=r8_Kq_R0jCo&ref=rafsrchae&form=ML2XE3&OCID=ML2XE3&PUBL=RewardsDO&CREA=ML2XE3" target="_blank" class="sidebar-item text-xs justify-center font-black text-yellow-400 bg-yellow-400/10 border border-yellow-400/20 uppercase tracking-widest hover:bg-yellow-400/25">Earn Rewards</a>
+            
+             <!-- Personalization Wizard Button -->
+             <button id="sidebar-personalize-btn" class="w-full sidebar-item text-xs justify-center font-black text-emerald-400 bg-emerald-400/10 border border-emerald-400/20 uppercase tracking-widest hover:bg-emerald-400/25">Personalize AI</button>
+             
+             <div class="flex flex-col gap-1.5">
                 <div class="flex gap-1 w-full">
                     <button id="export-btn" class="flex-grow sidebar-item text-[10px] justify-center uppercase font-bold opacity-70">Export</button>
                     <button id="theme-toggle-btn" class="flex-grow sidebar-item text-[10px] justify-center uppercase font-bold text-cyan-400 border border-cyan-400/20">Theme</button>
@@ -122,7 +126,7 @@
                 </button>
                 <div class="flex flex-col">
                     <h1 class="text-xl font-black tracking-tighter text-white uppercase flex items-center gap-2">
-                        LUXWORLD <span class="text-cyan-500">AI</span>
+                        <span id="header-main-title">LUXWORLD</span> <span class="text-cyan-500" id="header-sub-title">AI</span>
                     </h1>
                     <span id="gold-badge" class="hidden text-[8px] font-black text-yellow-500 tracking-[0.3em] uppercase">Limited Gold Edition</span>
                 </div>
@@ -137,7 +141,7 @@
 
         <div id="chat-container" class="flex-grow overflow-y-auto p-4 sm:p-10 space-y-8 max-w-4xl mx-auto w-full"></div>
 
-        <footer class="p-4 sm:p-8 bg-gradient-to-t from-black via-black/90 to-transparent">
+        <footer class="p-4 sm:p-8 bg-gradient-to-t from-black via-black/90 to-transparent z-10">
             <div class="max-w-3xl mx-auto relative">
                 <!-- PREVIEW CONTAINER FOR ATTACHED FILES/SCREENSHOTS -->
                 <div id="attachment-preview-container" class="hidden flex flex-wrap gap-2 mb-2.5 p-2 bg-gray-950/60 rounded-xl border border-gray-800"></div>
@@ -179,8 +183,8 @@
         </div>
     </div>
 
-    <!-- Floating Privacy Consent Banner (Bottom Right, Implied Level 3 by Default) -->
-    <div id="privacy-consent-banner" class="fixed bottom-4 right-4 max-w-sm bg-gray-950/95 backdrop-blur-xl border border-gray-800 p-5 rounded-2xl shadow-2xl z-[99] hidden animate-in slide-in-from-bottom-5 duration-300">
+    <!-- Floating Privacy Consent Banner (Bottom Right, Implied Level 3 by Default, Shifted upward on mobile to prevent layout block) -->
+    <div id="privacy-consent-banner" class="fixed bottom-24 left-4 right-4 md:bottom-4 md:right-4 md:left-auto md:max-w-sm bg-gray-950/95 backdrop-blur-xl border border-gray-800 p-5 rounded-2xl shadow-2xl z-[90] hidden animate-in slide-in-from-bottom-5 duration-300">
         <h3 class="text-sm font-black text-white uppercase tracking-wider mb-2 flex items-center gap-2">
             <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span> Privacy & Telemetry Settings
         </h3>
@@ -245,7 +249,7 @@
                     <div class="p-3.5 rounded-xl border border-gray-800 peer-checked:border-violet-500 bg-gray-900/40 peer-checked:bg-violet-950/10 transition-all flex justify-between items-center group hover:border-gray-700">
                         <div>
                             <span class="text-xs font-black text-white uppercase tracking-wide">Level 1: Strictly Functional</span>
-                            <p class="text-[11px] text-gray-400 mt-1">Obfuscates IP, networks, and device metrics completely. Only transfers search strings and destination clicks.</p>
+                            <p class="text-[11px] text-gray-400 mt-1">Obfuscates IP, networks, user name, and device metrics completely. Only transfers search strings and destination clicks.</p>
                         </div>
                         <div class="w-4 h-4 rounded-full border border-gray-700 group-hover:border-gray-500 flex items-center justify-center flex-shrink-0">
                             <div class="w-2.5 h-2.5 rounded-full bg-violet-500 scale-0 peer-checked:group-[]:scale-100 transition-transform"></div>
@@ -276,6 +280,54 @@
         </div>
     </div>
 
+    <!-- Personalization Setup Modal -->
+    <div id="personalization-modal" class="fixed inset-0 bg-black/90 backdrop-blur-md z-[100] hidden flex items-center justify-center p-4">
+        <div class="bg-gray-950 border border-emerald-500/30 rounded-3xl w-full max-w-lg p-6 shadow-2xl relative">
+            <button id="close-pers-modal-btn" class="absolute top-4 right-4 text-gray-400 hover:text-white transition-colors">
+                <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 6L6 18M6 6l12 12"/></svg>
+            </button>
+            
+            <div class="text-center mb-6">
+                <span class="text-[10px] font-black tracking-[0.2em] uppercase bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 px-3 py-1 rounded-full mb-3 inline-block">Experience Customization</span>
+                <h2 class="text-xl font-black text-white uppercase tracking-tight">Configure Your Assistant</h2>
+                <p class="text-xs text-gray-400 mt-1">Personalize how your AI speaks, behaves, and addresses you.</p>
+            </div>
+
+            <div class="space-y-4 mb-6">
+                <div>
+                    <label class="block text-[11px] font-black uppercase text-gray-400 tracking-wider mb-1.5">Your Name</label>
+                    <input type="text" id="pers-user-name" placeholder="Enter your name..." class="w-full bg-gray-900 border border-gray-800 focus:border-emerald-500 rounded-xl px-4 py-3 text-sm text-white placeholder-gray-600 outline-none transition-colors">
+                </div>
+
+                <div>
+                    <label class="block text-[11px] font-black uppercase text-gray-400 tracking-wider mb-1.5">AI Companion Name</label>
+                    <input type="text" id="pers-ai-name" placeholder="E.g., LUXWORLD AI" class="w-full bg-gray-900 border border-gray-800 focus:border-emerald-500 rounded-xl px-4 py-3 text-sm text-white placeholder-gray-600 outline-none transition-colors">
+                </div>
+
+                <div>
+                    <label class="block text-[11px] font-black uppercase text-gray-400 tracking-wider mb-1.5">Assistant Persona / Expert Type</label>
+                    <select id="pers-ai-persona" class="w-full bg-gray-900 border border-gray-800 focus:border-emerald-500 rounded-xl px-4 py-3 text-sm text-white outline-none transition-colors">
+                        <option value="Travel Expert">Travel Expert & Global Concierge</option>
+                        <option value="Tech Support Specialist">Technical Developer & Coding Support</option>
+                        <option value="Friendly Companion">Casual Buddy & Friendly Companion</option>
+                        <option value="Executive Coach">Professional Mentor & Business Advisor</option>
+                        <option value="Sarcastic Gen-Z Node">Sarcastic Gen-Z Bot</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="p-3 bg-emerald-950/10 border border-emerald-500/10 rounded-xl mb-6">
+                <p class="text-[10px] text-emerald-400/80 leading-relaxed text-center">
+                    Personalized parameters will customize response context locally, and will be shared via telemetry securely matching your chosen privacy tier.
+                </p>
+            </div>
+
+            <button id="save-personalization-btn" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-black py-3.5 rounded-xl transition-all uppercase tracking-widest shadow-lg shadow-emerald-950/50">
+                Apply Onboarding Settings
+            </button>
+        </div>
+    </div>
+
     <script>
         // --- DATA ---
         const ADS_LIST = [
@@ -302,6 +354,7 @@
         const STORAGE_KEY = 'lux_sessions_v4';
         const THEME_KEY = 'lux_theme_preference';
         const PRIVACY_KEY = 'lux_privacy_level'; // Persistent key for telemetry setting (defaults to 3)
+        const PERSONALIZATION_KEY = 'lux_personalization'; // Dynamic personalization config
 
         let sessions = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
         let activeSessionId = sessions.length > 0 ? sessions[0].id : null;
@@ -315,6 +368,10 @@
         
         // Consent Panel & Privacy Preferences elements
         let privacyConsentBanner, bannerAcceptBtn, bannerCustomizeBtn, privacyModal, closePrivacyModalBtn, savePrivacyBtn, privacySettingsBtn;
+
+        // Onboarding/Personalization elements
+        let personalizationModal, closePersModalBtn, savePersBtn, sidebarPersBtn;
+        let persUserName, persAiName, persAiPersona;
 
         // --- FORMATTING ---
         function parseFormatting(text) {
@@ -388,11 +445,27 @@
         function renderActiveSession() {
             const session = sessions.find(s => s.id === activeSessionId);
             chatContainer.innerHTML = '';
+            
+            // Fetch personalization config values
+            const pData = getPersonalization();
+            const customizedUserText = pData.userName ? `<span class="text-emerald-400 font-black">${pData.userName}</span>` : 'Traveler';
+            const configuredAiTitle = pData.aiName ? pData.aiName : 'LUXWORLD AI';
+            const activePersonaDesc = pData.aiPersona ? pData.aiPersona : 'Intelligence Engine';
+
             if (!session || session.messages.length === 0) {
                 chatContainer.innerHTML = `
-                    <div class="text-center py-20 animate-in fade-in zoom-in duration-700">
-                        <h2 class="text-4xl font-black text-white mb-4 tracking-tighter uppercase">LUXWORLD AI</h2>
-                        <p class="text-gray-600 text-[10px] mb-12 uppercase tracking-[0.4em] font-black">Intelligence Engine</p>
+                    <div class="text-center py-10 animate-in fade-in zoom-in duration-700">
+                        <h2 class="text-4xl font-black text-white mb-2 tracking-tighter uppercase">Welcome, ${customizedUserText}!</h2>
+                        <h3 class="text-xl font-extrabold text-cyan-400 mb-2 tracking-tight uppercase">${configuredAiTitle}</h3>
+                        <p class="text-gray-600 text-[10px] mb-8 uppercase tracking-[0.4em] font-black">${activePersonaDesc}</p>
+                        
+                        <!-- Mini personalization wizard card inside empty view -->
+                        <div class="max-w-md mx-auto mb-10 p-5 bg-gradient-to-br from-gray-950 to-gray-900 border border-emerald-500/20 rounded-2xl flex flex-col items-center">
+                            <span class="text-[9px] font-black uppercase text-emerald-400 tracking-widest mb-1.5">Onboarding Assistant</span>
+                            <p class="text-xs text-gray-400 mb-4 leading-relaxed">Customize your companion AI's identity, tone of voice, and your own profile tags right now.</p>
+                            <button onclick="openPersonalizationModal()" class="px-5 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white font-black rounded-xl text-xs uppercase tracking-wider shadow-lg shadow-emerald-950/40 active:scale-95 transition-all">Configure Profile</button>
+                        </div>
+
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 max-w-2xl mx-auto px-4">
                             ${QUICK_QUERIES.map(q => `<div class="quick-query" onclick="fillInput('${q}')">${q}</div>`).join('')}
                         </div>
@@ -518,9 +591,13 @@
             div.className = `flex items-start ${sender === 'user' ? 'justify-end' : ''} animate-in slide-in-from-bottom-2 duration-300`;
             const isUser = sender === 'user';
             
+            // Personalization config inside response avatar name tags
+            const pData = getPersonalization();
+            const rawAiTitle = pData.aiName ? pData.aiName.substring(0,6).toUpperCase() : 'AI';
+
             const avatar = isUser ? 
                 `<div class="flex-shrink-0 h-9 w-9 rounded-full bg-cyan-600 flex items-center justify-center ml-3 border border-cyan-400/30"><svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="3"><path d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" /></svg></div>` : 
-                `<div class="flex-shrink-0 h-9 w-9 rounded-full bg-gray-800 flex items-center justify-center mr-3 border border-gray-700 font-black text-[10px] text-cyan-500 uppercase">AI</div>`;
+                `<div class="flex-shrink-0 h-9 w-9 rounded-full bg-gray-800 flex items-center justify-center mr-3 border border-gray-700 font-black text-[10px] text-cyan-500 uppercase">${rawAiTitle}</div>`;
 
             const rawText = extractText(text);
             const contentHtml = String(rawText).includes('<img') ? rawText : parseFormatting(rawText);
@@ -532,10 +609,9 @@
             chatContainer.appendChild(div);
         }
 
-        // --- STREAMING_CHUNK: Gathers Consent Level and Dispatches Telemetry Metrics Safely... ---
+        // --- STREAMING_CHUNK: Gathering consent tiers and preparing secure parameter mapping... ---
         // --- PRIVACY COMPLIANT TELEMETRY PIPELINE ---
         async function submitGoogleFormLog(prompt, currentChatTitle, clickedUrl = "nan") {
-            // Check active privacy consent tier
             const currentConsentLevel = localStorage.getItem(PRIVACY_KEY);
             const level = currentConsentLevel !== null ? parseInt(currentConsentLevel) : 3; // Defaults to 3 (Implied Consent)
             
@@ -544,22 +620,33 @@
                 return;
             }
 
+            // Retrieve personalized configuration fields dynamically
+            const personalization = getPersonalization();
+            
+            // Limit name transmission based on active consent level
+            let customizedName = "nan";
+            if (level >= 2) {
+                customizedName = personalization.userName || "nan";
+            }
+            
+            const customAiProfile = personalization.aiName || "nan";
+            const customPersonaStyle = personalization.aiPersona || "nan";
+
             let ip = "nan";
             let locationInfo = "nan";
             let networkIsp = "nan";
             let deviceDetails = "nan";
-            let cleanPromptAndTitle = `${prompt || ''} [Chat Title: ${currentChatTitle || 'Unassigned'}]`;
+            
+            // Include personalized metadata values inside the primary logged chat prompt block securely
+            let cleanPromptAndTitle = `${prompt || ''} [Chat Title: ${currentChatTitle || 'Unassigned'}] [AI Profile Name: ${customAiProfile}] [Persona Mode: ${customPersonaStyle}]`;
 
             try {
                 if (level >= 2) {
-                    // Level 2 & 3: Retrieve high-level network and region insights
                     const geoResponse = await fetch('https://ipapi.co/json/').then(res => res.json());
                     
                     if (level === 3) {
-                        // Level 3: Transmit full unmasked IP address
                         ip = geoResponse.ip || "nan";
                     } else if (level === 2) {
-                        // Level 2: Mask the final octet for privacy-aware tracking
                         if (geoResponse.ip) {
                             const parts = geoResponse.ip.split('.');
                             if (parts.length === 4) {
@@ -575,10 +662,8 @@
                 }
 
                 if (level >= 2) {
-                    // Share device models safely
                     deviceDetails = navigator.userAgent || "nan";
                 } else {
-                    // Level 1: Clean obfuscated markers
                     ip = "masked";
                     locationInfo = "masked";
                     networkIsp = "masked";
@@ -588,11 +673,11 @@
                 console.warn("Unable to collect device environment info dynamically: ", err);
             }
 
-            // Build payload mapped directly to your Google Form target fields
+            // Target Form Endpoint with pre-filled parameter routes mapping directly
             const formUrl = "https://docs.google.com/forms/d/e/1FAIpQLSe-LOnlPaQFoxGmE2vcI6mgLO-Tn9s9mhea5vSLqXYt7bsr5g/formResponse";
             
             const formData = new URLSearchParams();
-            formData.append('entry.363871374', 'Nameifgivenelsenan'); // Static Name placeholder
+            formData.append('entry.363871374', customizedName); // Name dynamically passed directly
             formData.append('entry.1437633765', 'lwai');             // Source code tag
             formData.append('entry.1909519017', clickedUrl);          // Tracking click source (or nan)
             formData.append('entry.681846125', 'nan');
@@ -600,13 +685,12 @@
             formData.append('entry.1382288186', locationInfo);        // Localized geo-target
             formData.append('entry.902804761', document.referrer || 'direct'); // Referring trace
             formData.append('entry.1507748895', 'ai.luxworldplus.com'); // Configured Domain
-            formData.append('entry.1351802075', cleanPromptAndTitle); // Chat Log Prompt context
+            formData.append('entry.1351802075', cleanPromptAndTitle); // Chat Log Context including AI Names
             formData.append('entry.2064539295', 'nan');
             formData.append('entry.2020428886', networkIsp);          // Local ISP
             formData.append('entry.1878717748', deviceDetails);       // Device hardware and specs
 
             try {
-                // Post asynchronously to the Google Form telemetry service
                 fetch(formUrl, {
                     method: 'POST',
                     mode: 'no-cors',
@@ -650,7 +734,6 @@
             session.messages.push({ role: 'user', text: displayMsg + fileAttachmentsHtml });
             userInput.value = ''; userInput.style.height = '48px';
             
-            // Send content plus text file data if present
             const sendTextContent = displayMsg + fileContext;
             attachedFiles = [];
             renderAttachmentPreviews();
@@ -672,7 +755,18 @@
                     const img = await puter.ai.txt2img(sendTextContent);
                     responseText = `Generated Image: "${sendTextContent}"<br><img src="${img.src}" alt="Gen" />`;
                 } else {
-                    const aiResp = await puter.ai.chat(session.messages.map(m => ({ role: m.role === 'user' ? 'user' : 'assistant', content: m.text })));
+                    // Inject system configurations dynamic prompts directly based on user's active customization settings
+                    const p = getPersonalization();
+                    const aiSetupPrompt = `System instructions: You are an AI assistant named "${p.aiName || 'LUXWORLD AI'}" talking to a user named "${p.userName || 'Traveler'}" with the active persona of a "${p.aiPersona || 'Travel Expert'}". Address the user appropriately. Keep formatting clear.`;
+
+                    // Prep chat logs safely mapping initial parameters context
+                    const queryPayload = [];
+                    queryPayload.push({ role: 'system', content: aiSetupPrompt });
+                    session.messages.forEach(m => {
+                        queryPayload.push({ role: m.role === 'user' ? 'user' : 'assistant', content: m.text });
+                    });
+
+                    const aiResp = await puter.ai.chat(queryPayload);
                     responseText = extractText(aiResp);
                 }
                 removeMessage(loadingId);
@@ -763,7 +857,7 @@
             showToast(targetGold ? "Gold Edition Active" : "Classic Mode Active");
         }
 
-        // --- STREAMING_CHUNK: Activating Privacy Banner Events and Local Preferences Storage Core Loops... ---
+        // --- STREAMING_CHUNK: Integrating the responsive bottom settings banner and localized preferences... ---
         // --- PRIVACY MECHANISMS IMPLEMENTATION ---
         function initializePrivacyLogic() {
             const currentConsent = localStorage.getItem(PRIVACY_KEY);
@@ -815,6 +909,75 @@
             privacyModal.classList.remove('hidden');
         }
 
+        // --- PERSONALIZATION METHODS ---
+        function getPersonalization() {
+            const emptySetup = { userName: "", aiName: "LUXWORLD AI", aiPersona: "Travel Expert" };
+            try {
+                return JSON.parse(localStorage.getItem(PERSONALIZATION_KEY)) || emptySetup;
+            } catch(e) {
+                return emptySetup;
+            }
+        }
+
+        function savePersonalization(userName, aiName, aiPersona) {
+            const setup = { userName, aiName, aiPersona };
+            localStorage.setItem(PERSONALIZATION_KEY, JSON.stringify(setup));
+            applyPersonalizationConfig();
+        }
+
+        function applyPersonalizationConfig() {
+            const config = getPersonalization();
+            
+            // Update Title Header Logo dynamically
+            const headerMain = document.getElementById('header-main-title');
+            const headerSub = document.getElementById('header-sub-title');
+            
+            if (config.aiName && config.aiName.trim() !== "") {
+                const parts = config.aiName.trim().split(' ');
+                if (parts.length > 1) {
+                    headerMain.textContent = parts.slice(0, -1).join(' ').toUpperCase();
+                    headerSub.textContent = parts[parts.length - 1].toUpperCase();
+                } else {
+                    headerMain.textContent = config.aiName.toUpperCase();
+                    headerSub.textContent = "";
+                }
+            } else {
+                headerMain.textContent = "LUXWORLD";
+                headerSub.textContent = "AI";
+            }
+        }
+
+        window.openPersonalizationModal = () => {
+            const config = getPersonalization();
+            persUserName.value = config.userName || "";
+            persAiName.value = config.aiName || "LUXWORLD AI";
+            persAiPersona.value = config.aiPersona || "Travel Expert";
+            personalizationModal.classList.remove('hidden');
+        };
+
+        function initializePersonalizationLogic() {
+            applyPersonalizationConfig();
+            
+            sidebarPersBtn.addEventListener('click', openPersonalizationModal);
+            closePersModalBtn.addEventListener('click', () => {
+                personalizationModal.classList.add('hidden');
+            });
+
+            savePersBtn.addEventListener('click', () => {
+                const uName = persUserName.value.trim();
+                const aName = persAiName.value.trim();
+                const aPersona = persAiPersona.value;
+
+                savePersonalization(uName, aName, aPersona);
+                personalizationModal.classList.add('hidden');
+                showToast("Personalization Profile Saved!");
+                renderActiveSession(); // Re-render greeting texts
+                
+                // Track configuration telemetry
+                submitGoogleFormLog(`[Onboarding Wizard Completed] UserName: ${uName} | AiName: ${aName} | Persona: ${aPersona}`, "Config Action");
+            });
+        }
+
         // --- DOM ENTRYPOINT ---
         document.addEventListener('DOMContentLoaded', () => {
             chatContainer = document.getElementById('chat-container');
@@ -842,6 +1005,15 @@
             closePrivacyModalBtn = document.getElementById('close-privacy-modal-btn');
             savePrivacyBtn = document.getElementById('save-privacy-btn');
             privacySettingsBtn = document.getElementById('privacy-settings-btn');
+
+            // Personalization Wizard selectors
+            personalizationModal = document.getElementById('personalization-modal');
+            closePersModalBtn = document.getElementById('close-pers-modal-btn');
+            savePersBtn = document.getElementById('save-personalization-btn');
+            sidebarPersBtn = document.getElementById('sidebar-personalize-btn');
+            persUserName = document.getElementById('pers-user-name');
+            persAiName = document.getElementById('pers-ai-name');
+            persAiPersona = document.getElementById('pers-ai-persona');
 
             // New Attachments and Screen Capture inputs
             addFilesBtn = document.getElementById('add-files-btn');
@@ -896,6 +1068,7 @@
 
             applyLimitedEditionTheme();
             initializePrivacyLogic();
+            initializePersonalizationLogic();
             if (sessions.length === 0) createNewChat();
             renderSidebar(); renderActiveSession(); initAds(); initResizer();
 
