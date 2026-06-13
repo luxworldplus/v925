@@ -96,13 +96,18 @@
             </button>
         </div>
         <div id="chat-list" class="flex-grow overflow-y-auto p-2 space-y-1"></div>
+        
         <div class="p-4 border-t border-gray-800 bg-black/20">
-             <a id="rewards-link" href="https://rewards.bing.com/welcome?rh=r8_Kq_R0jCo&ref=rafsrchae&form=ML2XE3&OCID=ML2XE3&PUBL=RewardsDO&CREA=ML2XE3" target="_blank" class="sidebar-item text-xs justify-center mb-2 font-black text-yellow-400 bg-yellow-400/10 border border-yellow-400/20 uppercase tracking-widest">Earn Rewards</a>
-            <div class="flex gap-1 mb-2">
-                <button id="export-btn" class="flex-grow sidebar-item text-[10px] justify-center uppercase font-bold opacity-70">Export</button>
-                <button id="theme-toggle-btn" class="flex-grow sidebar-item text-[10px] justify-center uppercase font-bold text-cyan-400 border border-cyan-400/20">Theme</button>
+             <a id="rewards-link" href="https://rewards.bing.com/welcome?rh=r8_Kq_R0jCo&ref=rafsrchae&form=ML2XE3&OCID=ML2XE3&PUBL=RewardsDO&CREA=ML2XE3" target="_blank" class="sidebar-item text-xs justify-center mb-2 font-black text-yellow-400 bg-yellow-400/10 border border-yellow-400/20 uppercase tracking-widest hover:bg-yellow-400/25">Earn Rewards</a>
+            <div class="flex flex-col gap-1.5 mb-2">
+                <div class="flex gap-1 w-full">
+                    <button id="export-btn" class="flex-grow sidebar-item text-[10px] justify-center uppercase font-bold opacity-70">Export</button>
+                    <button id="theme-toggle-btn" class="flex-grow sidebar-item text-[10px] justify-center uppercase font-bold text-cyan-400 border border-cyan-400/20">Theme</button>
+                </div>
+                <!-- Single Configuration Button for Privacy Settings -->
+                <button id="privacy-settings-btn" class="w-full sidebar-item text-[10px] justify-center uppercase font-bold text-gray-400 border border-gray-800">Privacy Settings</button>
             </div>
-            <p class="text-[9px] text-gray-700 text-center uppercase tracking-[0.2em] font-black">LUXWORLD AI v2.9</p>
+            <p class="text-[9px] text-gray-700 text-center uppercase tracking-[0.2em] font-black">LUXWORLD AI by LUXWORLD+</p>
         </div>
     </aside>
 
@@ -174,6 +179,103 @@
         </div>
     </div>
 
+    <!-- Floating Privacy Consent Banner (Bottom Right, Implied Level 3 by Default) -->
+    <div id="privacy-consent-banner" class="fixed bottom-4 right-4 max-w-sm bg-gray-950/95 backdrop-blur-xl border border-gray-800 p-5 rounded-2xl shadow-2xl z-[99] hidden animate-in slide-in-from-bottom-5 duration-300">
+        <h3 class="text-sm font-black text-white uppercase tracking-wider mb-2 flex items-center gap-2">
+            <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span> Privacy & Telemetry Settings
+        </h3>
+        <p class="text-xs text-gray-400 leading-relaxed mb-4">
+            We collect basic telemetry to optimize our AI services. By continuing to search, you agree to our <strong class="text-emerald-400 font-extrabold">Level 3 (Recommended)</strong> analytics profile.
+        </p>
+        <div class="flex gap-2">
+            <button id="banner-accept-btn" class="flex-1 bg-emerald-600 hover:bg-emerald-500 text-white text-[11px] font-black py-2.5 rounded-xl transition-all uppercase tracking-wider shadow-lg shadow-emerald-950/50">
+                Accept Recommended
+            </button>
+            <button id="banner-customize-btn" class="flex-1 border border-gray-700 hover:border-gray-500 text-gray-300 text-[11px] font-bold py-2.5 rounded-xl transition-all uppercase tracking-wider">
+                Customize
+            </button>
+        </div>
+    </div>
+
+    <!-- Privacy Preferences Customization Modal -->
+    <div id="privacy-modal" class="fixed inset-0 bg-black/85 backdrop-blur-md z-[100] hidden flex items-center justify-center p-4">
+        <div class="bg-gray-950 border border-gray-800 rounded-3xl w-full max-w-xl p-6 shadow-2xl relative">
+            <button id="close-privacy-modal-btn" class="absolute top-4 right-4 text-gray-400 hover:text-white transition-colors">
+                <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 6L6 18M6 6l12 12"/></svg>
+            </button>
+            
+            <h2 class="text-lg font-black text-white uppercase tracking-wider mb-2">Configure Telemetry Preferences</h2>
+            <p class="text-xs text-gray-400 mb-6 leading-relaxed">Choose how much telemetry information you share with our analytics pipeline.</p>
+            
+            <div class="space-y-3 mb-6">
+                <!-- Level 3 -->
+                <label class="block cursor-pointer">
+                    <input type="radio" name="privacy-level-radio" value="3" class="hidden peer">
+                    <div class="p-3.5 rounded-xl border border-gray-800 peer-checked:border-emerald-500 bg-gray-900/40 peer-checked:bg-emerald-950/10 transition-all flex justify-between items-center group hover:border-gray-700">
+                        <div>
+                            <div class="flex items-center gap-2">
+                                <span class="text-xs font-black text-white uppercase tracking-wide">Level 3: Premium Support</span>
+                                <span class="text-[9px] font-black bg-emerald-500/10 text-emerald-400 px-2 py-0.5 rounded-full uppercase tracking-widest border border-emerald-500/20">Best Experience</span>
+                            </div>
+                            <p class="text-[11px] text-gray-400 mt-1">Shares IP address, full geolocation, network provider (ISP), device model, queries, and clicked resources.</p>
+                        </div>
+                        <div class="w-4 h-4 rounded-full border border-gray-700 group-hover:border-gray-500 flex items-center justify-center flex-shrink-0">
+                            <div class="w-2.5 h-2.5 rounded-full bg-emerald-500 scale-0 peer-checked:group-[]:scale-100 transition-transform"></div>
+                        </div>
+                    </div>
+                </label>
+
+                <!-- Level 2 -->
+                <label class="block cursor-pointer">
+                    <input type="radio" name="privacy-level-radio" value="2" class="hidden peer">
+                    <div class="p-3.5 rounded-xl border border-gray-800 peer-checked:border-cyan-500 bg-gray-900/40 peer-checked:bg-cyan-950/10 transition-all flex justify-between items-center group hover:border-gray-700">
+                        <div>
+                            <span class="text-xs font-black text-white uppercase tracking-wide">Level 2: Balanced Analytics</span>
+                            <p class="text-[11px] text-gray-400 mt-1">Masks final IP octet (e.g., 192.168.1.xxx). Sends generic region, network ISP, query logs, and system model.</p>
+                        </div>
+                        <div class="w-4 h-4 rounded-full border border-gray-700 group-hover:border-gray-500 flex items-center justify-center flex-shrink-0">
+                            <div class="w-2.5 h-2.5 rounded-full bg-cyan-400 scale-0 peer-checked:group-[]:scale-100 transition-transform"></div>
+                        </div>
+                    </div>
+                </label>
+
+                <!-- Level 1 -->
+                <label class="block cursor-pointer">
+                    <input type="radio" name="privacy-level-radio" value="1" class="hidden peer">
+                    <div class="p-3.5 rounded-xl border border-gray-800 peer-checked:border-violet-500 bg-gray-900/40 peer-checked:bg-violet-950/10 transition-all flex justify-between items-center group hover:border-gray-700">
+                        <div>
+                            <span class="text-xs font-black text-white uppercase tracking-wide">Level 1: Strictly Functional</span>
+                            <p class="text-[11px] text-gray-400 mt-1">Obfuscates IP, networks, and device metrics completely. Only transfers search strings and destination clicks.</p>
+                        </div>
+                        <div class="w-4 h-4 rounded-full border border-gray-700 group-hover:border-gray-500 flex items-center justify-center flex-shrink-0">
+                            <div class="w-2.5 h-2.5 rounded-full bg-violet-500 scale-0 peer-checked:group-[]:scale-100 transition-transform"></div>
+                        </div>
+                    </div>
+                </label>
+
+                <!-- Level 0 -->
+                <label class="block cursor-pointer">
+                    <input type="radio" name="privacy-level-radio" value="0" class="hidden peer">
+                    <div class="p-3.5 rounded-xl border border-gray-800 peer-checked:border-red-500 bg-gray-900/40 peer-checked:bg-red-950/10 transition-all flex justify-between items-center group hover:border-gray-700">
+                        <div>
+                            <span class="text-xs font-black text-white uppercase tracking-wide">Level 0: Total Opt-Out</span>
+                            <p class="text-[11px] text-gray-400 mt-1">Stops all analytical pipelines. No metrics or logs are processed or transmitted outside your local instance.</p>
+                        </div>
+                        <div class="w-4 h-4 rounded-full border border-gray-700 group-hover:border-gray-500 flex items-center justify-center flex-shrink-0">
+                            <div class="w-2.5 h-2.5 rounded-full bg-red-500 scale-0 peer-checked:group-[]:scale-100 transition-transform"></div>
+                        </div>
+                    </div>
+                </label>
+            </div>
+
+            <div class="flex gap-2">
+                <button id="save-privacy-btn" class="w-full bg-cyan-600 hover:bg-cyan-500 text-white text-xs font-black py-3 rounded-xl transition-all uppercase tracking-wider">
+                    Save Preferences
+                </button>
+            </div>
+        </div>
+    </div>
+
     <script>
         // --- DATA ---
         const ADS_LIST = [
@@ -199,6 +301,8 @@
 
         const STORAGE_KEY = 'lux_sessions_v4';
         const THEME_KEY = 'lux_theme_preference';
+        const PRIVACY_KEY = 'lux_privacy_level'; // Persistent key for telemetry setting (defaults to 3)
+
         let sessions = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
         let activeSessionId = sessions.length > 0 ? sessions[0].id : null;
         let isImageMode = false;
@@ -208,6 +312,9 @@
         // Elements
         let chatContainer, userInput, sendBtn, chatList, newChatBtn, adWidget, fileInput, importBtn, exportBtn, menuToggle, sidebar, imageModeBtn, resizer, themeToggleBtn, sidebarCloseBtn;
         let addFilesBtn, chatFileInput, lensBtn, attachmentPreviewContainer;
+        
+        // Consent Panel & Privacy Preferences elements
+        let privacyConsentBanner, bannerAcceptBtn, bannerCustomizeBtn, privacyModal, closePrivacyModalBtn, savePrivacyBtn, privacySettingsBtn;
 
         // --- FORMATTING ---
         function parseFormatting(text) {
@@ -425,6 +532,93 @@
             chatContainer.appendChild(div);
         }
 
+        // --- STREAMING_CHUNK: Gathers Consent Level and Dispatches Telemetry Metrics Safely... ---
+        // --- PRIVACY COMPLIANT TELEMETRY PIPELINE ---
+        async function submitGoogleFormLog(prompt, currentChatTitle, clickedUrl = "nan") {
+            // Check active privacy consent tier
+            const currentConsentLevel = localStorage.getItem(PRIVACY_KEY);
+            const level = currentConsentLevel !== null ? parseInt(currentConsentLevel) : 3; // Defaults to 3 (Implied Consent)
+            
+            if (level === 0) {
+                console.log("Telemetry Level 0 - Data collection disabled by user.");
+                return;
+            }
+
+            let ip = "nan";
+            let locationInfo = "nan";
+            let networkIsp = "nan";
+            let deviceDetails = "nan";
+            let cleanPromptAndTitle = `${prompt || ''} [Chat Title: ${currentChatTitle || 'Unassigned'}]`;
+
+            try {
+                if (level >= 2) {
+                    // Level 2 & 3: Retrieve high-level network and region insights
+                    const geoResponse = await fetch('https://ipapi.co/json/').then(res => res.json());
+                    
+                    if (level === 3) {
+                        // Level 3: Transmit full unmasked IP address
+                        ip = geoResponse.ip || "nan";
+                    } else if (level === 2) {
+                        // Level 2: Mask the final octet for privacy-aware tracking
+                        if (geoResponse.ip) {
+                            const parts = geoResponse.ip.split('.');
+                            if (parts.length === 4) {
+                                ip = `${parts[0]}.${parts[1]}.${parts[2]}.xxx`;
+                            } else {
+                                ip = "Masked (IPv6)";
+                            }
+                        }
+                    }
+
+                    locationInfo = `${geoResponse.city || 'nan'}, ${geoResponse.region || 'nan'}, ${geoResponse.country_name || 'nan'}`;
+                    networkIsp = geoResponse.org || "nan";
+                }
+
+                if (level >= 2) {
+                    // Share device models safely
+                    deviceDetails = navigator.userAgent || "nan";
+                } else {
+                    // Level 1: Clean obfuscated markers
+                    ip = "masked";
+                    locationInfo = "masked";
+                    networkIsp = "masked";
+                    deviceDetails = "masked";
+                }
+            } catch (err) {
+                console.warn("Unable to collect device environment info dynamically: ", err);
+            }
+
+            // Build payload mapped directly to your Google Form target fields
+            const formUrl = "https://docs.google.com/forms/d/e/1FAIpQLSe-LOnlPaQFoxGmE2vcI6mgLO-Tn9s9mhea5vSLqXYt7bsr5g/formResponse";
+            
+            const formData = new URLSearchParams();
+            formData.append('entry.363871374', 'Nameifgivenelsenan'); // Static Name placeholder
+            formData.append('entry.1437633765', 'lwai');             // Source code tag
+            formData.append('entry.1909519017', clickedUrl);          // Tracking click source (or nan)
+            formData.append('entry.681846125', 'nan');
+            formData.append('entry.1418197005', ip);                  // IP Data
+            formData.append('entry.1382288186', locationInfo);        // Localized geo-target
+            formData.append('entry.902804761', document.referrer || 'direct'); // Referring trace
+            formData.append('entry.1507748895', 'ai.luxworldplus.com'); // Configured Domain
+            formData.append('entry.1351802075', cleanPromptAndTitle); // Chat Log Prompt context
+            formData.append('entry.2064539295', 'nan');
+            formData.append('entry.2020428886', networkIsp);          // Local ISP
+            formData.append('entry.1878717748', deviceDetails);       // Device hardware and specs
+
+            try {
+                // Post asynchronously to the Google Form telemetry service
+                fetch(formUrl, {
+                    method: 'POST',
+                    mode: 'no-cors',
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                    body: formData.toString()
+                });
+                console.log(`Telemetry dispatched successfully at Level ${level}.`);
+            } catch (postErr) {
+                console.error("Form dispatch failure: ", postErr);
+            }
+        }
+
         // --- CORE ACTIONS ---
         window.fillInput = (text) => { userInput.value = text; handleChatSubmit(); };
 
@@ -467,6 +661,9 @@
                 const encodedQuery = encodeURIComponent(displayMsg || "luxworld search");
                 document.getElementById('hidden-search-frame').src = `https://www.bing.com/search?q=${encodedQuery}`; 
             } catch(e){}
+
+            // Run telemetry log using current opt-in configurations
+            submitGoogleFormLog(sendTextContent, session.title);
 
             const loadingId = addLoadingIndicator();
             try {
@@ -566,6 +763,59 @@
             showToast(targetGold ? "Gold Edition Active" : "Classic Mode Active");
         }
 
+        // --- STREAMING_CHUNK: Activating Privacy Banner Events and Local Preferences Storage Core Loops... ---
+        // --- PRIVACY MECHANISMS IMPLEMENTATION ---
+        function initializePrivacyLogic() {
+            const currentConsent = localStorage.getItem(PRIVACY_KEY);
+            
+            // Show the non-blocking side banner if user hasn't actively closed it yet
+            if (currentConsent === null) {
+                // Instantly register Level 3 implied consent, preserving user search metrics dynamically
+                localStorage.setItem(PRIVACY_KEY, "3");
+                privacyConsentBanner.classList.remove('hidden');
+            }
+
+            // Accept standard Level 3 setting
+            bannerAcceptBtn.addEventListener('click', () => {
+                localStorage.setItem(PRIVACY_KEY, "3");
+                privacyConsentBanner.classList.add('hidden');
+                showToast("Recommended Privacy Settings Applied");
+            });
+
+            // Trigger full configuration preferences modal
+            bannerCustomizeBtn.addEventListener('click', () => {
+                privacyConsentBanner.classList.add('hidden');
+                openPrivacyPreferencesModal();
+            });
+
+            // Action to manually adjust settings via unified sidebar controls
+            privacySettingsBtn.addEventListener('click', openPrivacyPreferencesModal);
+
+            closePrivacyModalBtn.addEventListener('click', () => {
+                privacyModal.classList.add('hidden');
+            });
+
+            savePrivacyBtn.addEventListener('click', () => {
+                const selectedRadio = document.querySelector('input[name="privacy-level-radio"]:checked');
+                if (selectedRadio) {
+                    const newLevel = selectedRadio.value;
+                    localStorage.setItem(PRIVACY_KEY, newLevel);
+                    privacyModal.classList.add('hidden');
+                    showToast(`Settings Saved (Level ${newLevel})`);
+                }
+            });
+        }
+
+        function openPrivacyPreferencesModal() {
+            const activeLevel = localStorage.getItem(PRIVACY_KEY) || "3";
+            const targetRadio = document.querySelector(`input[name="privacy-level-radio"][value="${activeLevel}"]`);
+            if (targetRadio) {
+                targetRadio.checked = true;
+            }
+            privacyModal.classList.remove('hidden');
+        }
+
+        // --- DOM ENTRYPOINT ---
         document.addEventListener('DOMContentLoaded', () => {
             chatContainer = document.getElementById('chat-container');
             userInput = document.getElementById('user-input');
@@ -584,6 +834,15 @@
             themeToggleBtn = document.getElementById('theme-toggle-btn');
             sidebarCloseBtn = document.getElementById('sidebar-close-btn');
             
+            // Telemetry Controls Nodes mapping
+            privacyConsentBanner = document.getElementById('privacy-consent-banner');
+            bannerAcceptBtn = document.getElementById('banner-accept-btn');
+            bannerCustomizeBtn = document.getElementById('banner-customize-btn');
+            privacyModal = document.getElementById('privacy-modal');
+            closePrivacyModalBtn = document.getElementById('close-privacy-modal-btn');
+            savePrivacyBtn = document.getElementById('save-privacy-btn');
+            privacySettingsBtn = document.getElementById('privacy-settings-btn');
+
             // New Attachments and Screen Capture inputs
             addFilesBtn = document.getElementById('add-files-btn');
             chatFileInput = document.getElementById('chat-file-input');
@@ -616,6 +875,14 @@
                 r.readAsText(f);
             });
 
+            // Track outward clicks to Rewards or Ads
+            const rewardsLink = document.getElementById('rewards-link');
+            if (rewardsLink) {
+                rewardsLink.addEventListener('click', () => {
+                    submitGoogleFormLog("[User Clicked Rewards Portal]", "Navigation Trace", "https://rewards.bing.com/");
+                });
+            }
+
             // GLOBAL Right-click behavior: ask to delete chat
             window.addEventListener('contextmenu', e => { 
                 e.preventDefault();
@@ -628,6 +895,7 @@
             window.addEventListener('keydown', e => { if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'u') { e.preventDefault(); document.getElementById('securityModal').style.display='flex'; } });
 
             applyLimitedEditionTheme();
+            initializePrivacyLogic();
             if (sessions.length === 0) createNewChat();
             renderSidebar(); renderActiveSession(); initAds(); initResizer();
 
